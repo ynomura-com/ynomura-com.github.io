@@ -1,5 +1,4 @@
-# ynomura-com.github.io
-ドローンを飛行させる際に有用なアプリを公開。
+# ドローンを飛行させる際に有用なアプリを公開しています。
 
 ## DJI飛行ログファイルの解析アプリ（DJI Flight Log Analyzer）
 

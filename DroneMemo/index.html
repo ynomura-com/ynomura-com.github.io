@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飛行メモ</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon512.png">
+    <!-- iOS用 -->
+    <link rel="apple-touch-icon" href="icon512.png">
+
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --active-color: #00d1b2;
+            --takeoff-color: #28a745;
+            --landing-color: #dc3545;
+            --clear-color: #6c757d;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 10px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            background: #f0f2f5;
+            padding: 10px 0;
+            z-index: 100;
+        }
+        .drone-select {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            background-color: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 18px;
+        }
+        .drone-select:focus {
+            border-color: var(--active-color);
+            outline: none;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 15px 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.98); }
+        .takeoff-btn { background-color: var(--takeoff-color); color: white; }
+        .landing-btn { background-color: var(--landing-color); color: white; }
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #eee;
+            padding: 12px 5px;
+            text-align: center;
+        }
+        th { background-color: #f8f9fa; color: #666; }
+        .footer-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0 40px 0;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .complete-btn { background-color: #4a4a4a; color: white; }
+        .csv-btn { background-color: #007bff; color: white; font-size: 0.85rem; }
+        .clear-btn { background-color: #eeeeee; color: #888; font-size: 0.8rem; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <div class="drone-selector">
+        <select id="droneSelect" class="drone-select">
+            <option value="DJI Mini4 Pro" selected>DJI Mini4 Pro</option>
+            <option value="DJI Neo">DJI Neo</option>
+        </select>
+    </div>
+    <div class="action-buttons">
+        <button class="takeoff-btn" onclick="recordTakeoff()">離陸</button>
+        <button class="landing-btn" onclick="recordLanding()">着陸</button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table id="flightTable">
+        <thead>
+            <tr>
+                <th style="width: 10%">No</th>
+                <th>ドローン名</th>
+                <th>離陸時刻</th>
+                <th>着陸時刻</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<div class="footer-buttons">
+    <div class="row">
+        <button class="complete-btn" onclick="selectFullTable()">作業完了 (全選択)</button>
+        <button class="csv-btn" onclick="copyAsTSV()">TSV(タブ区切り)でコピー</button>
+    </div>
+    <button class="clear-btn" onclick="clearRecords()">記録のクリア</button>
+</div>
+
+<script>
+    const rowCount = 20;
+    const tbody = document.querySelector("#flightTable tbody");
+
+    function initTable() {
+        tbody.innerHTML = "";
+        for (let i = 1; i <= rowCount; i++) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${i}</td>
+                <td class="cell-drone"></td>
+                <td class="cell-takeoff"></td>
+                <td class="cell-landing"></td>
+            `;
+            tbody.appendChild(row);
+        }
+    }
+    initTable();
+
+    function getTimeStr() {
+        const now = new Date();
+        return now.getHours().toString().padStart(2, '0') + ":" + 
+               now.getMinutes().toString().padStart(2, '0');
+    }
+
+    function recordTakeoff() {
+        const droneSelect = document.getElementById("droneSelect");
+        const selectedDrone = droneSelect.value;
+        const rows = document.querySelectorAll("#flightTable tbody tr");
+        for (let row of rows) {
+            const droneCell = row.querySelector(".cell-drone");
+            const takeoffCell = row.querySelector(".cell-takeoff");
+            if (takeoffCell.innerText === "") {
+                droneCell.innerText = selectedDrone;
+                takeoffCell.innerText = getTimeStr();
+                break;
+            }
+        }
+    }
+
+    function recordLanding() {
+        const rows = document.querySelectorAll("#flightTable tbody tr");
+        for (let i = 0; i < rows.length; i++) {
+            const takeoffCell = rows[i].querySelector(".cell-takeoff");
+            const landingCell = rows[i].querySelector(".cell-landing");
+            if (takeoffCell.innerText !== "" && landingCell.innerText === "") {
+                landingCell.innerText = getTimeStr();
+                return;
+            }
+        }
+        alert("対応する離陸記録が見つかりません");
+    }
+
+    function selectFullTable() {
+        const range = document.createRange();
+        range.selectNodeContents(document.getElementById("flightTable"));
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    // タブ区切り(TSV)に変換してコピー
+    function copyAsTSV() {
+        // ヘッダーをタブ区切りにする
+        let tsvContent = "DroneName\tTakeoff\tLanding\n";
+        const rows = document.querySelectorAll("#flightTable tbody tr");
+        let hasData = false;
+
+        rows.forEach(row => {
+            const drone = row.querySelector(".cell-drone").innerText;
+            const takeoff = row.querySelector(".cell-takeoff").innerText;
+            const landing = row.querySelector(".cell-landing").innerText;
+
+            if (takeoff !== "") {
+                // 各項目をタブ(\t)で繋ぐ
+                tsvContent += `${drone}\t${takeoff}\t${landing}\n`;
+                hasData = true;
+            }
+        });
+
+        if (!hasData) {
+            alert("記録されたデータがありません");
+            return;
+        }
+
+        navigator.clipboard.writeText(tsvContent).then(() => {
+            alert("タブ区切り形式でコピーしました。Excel等にそのまま貼り付け可能です。");
+        }).catch(err => {
+            console.error("コピーに失敗しました", err);
+            alert("コピーに失敗しました");
+        });
+    }
+
+    function clearRecords() {
+        if (confirm("全ての記録を消去しますか？")) {
+            initTable();
+            document.getElementById("droneSelect").selectedIndex = 0;
+        }
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(() => {
+            console.log('Service Worker Registered');
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
   "name": "Drone Log Analyzer",
   "short_name": "DroneLog",
   "start_url": ".",
-  // "display: "standalone",
+  "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
   "icons": [

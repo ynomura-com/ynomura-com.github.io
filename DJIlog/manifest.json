@@ -1,15 +1,13 @@
 {
-  "name": "DJI飛行ログ解析",
-  "short_name": "飛行ログ解析",
-  "description": "DJI Flight Log Viewer CSV形式のフライトログを解析するアプリ",
-  "start_url": "index.html",
-  "display": "standalone",
+  "name": "Drone Log Analyzer",
+  "short_name": "DroneLog",
+  "start_url": ".",
+  "display: "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2196F3",
-  "orientation": "portrait-primary",
+  "theme_color": "#007bff",
   "icons": [
     {
-      "src": "icon512.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

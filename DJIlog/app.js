@@ -19,6 +19,40 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
     e.target.value = ''; 
 });
 
+/**
+ * Safariでも動作する日付解析関数
+ * @param {string} dateStr "m/d/y" 形式
+ * @param {string} timeStr "h:m:s.s AM/PM" 形式
+ * @returns {Date} UTCとしてのDateオブジェクト
+ */
+function parseGmtDateTime(dateStr, timeStr) {
+    // 日付の分解 (m/d/y)
+    const dParts = dateStr.split('/');
+    if (dParts.length !== 3) return new Date(NaN);
+    const month = parseInt(dParts[0], 10) - 1; // 0-11
+    const day = parseInt(dParts[1], 10);
+    const year = parseInt(dParts[2], 10);
+
+    // 時刻の分解 (h:m:s.s AM/PM)
+    // スペースやコロンで分割: ["h", "m", "s.s", "AM/PM"]
+    const tParts = timeStr.trim().split(/[:\s]+/);
+    if (tParts.length < 4) return new Date(NaN);
+
+    let hour = parseInt(tParts[0], 10);
+    const minute = parseInt(tParts[1], 10);
+    const secParts = tParts[2].split('.'); // 秒とミリ秒を分ける
+    const second = parseInt(secParts[0], 10);
+    const ms = secParts[1] ? parseFloat("0." + secParts[1]) * 1000 : 0;
+    const ampm = tParts[3].toUpperCase();
+
+    // 12時間制を24時間制に変換
+    if (ampm === "PM" && hour < 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    // Date.UTC を使うことでブラウザの時差設定に影響されずGMTとして生成
+    return new Date(Date.UTC(year, month, day, hour, minute, second, ms));
+}
+
 function processCsv(text) {
     const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
     if (lines.length < 3) throw new Error("CSVのデータ行が足りません");
@@ -36,16 +70,19 @@ function processCsv(text) {
     const idxHSpeed = getIdx('OSD.hSpeedMax [MPH]');
     const idxName = getIdx('RECOVER.aircraftName');
 
-    // 1. 離陸時刻 (3行目) を GMT として解析
-    const takeoffGmt = new Date(`${firstDataLine[idxDate]} ${firstDataLine[idxTime]} GMT`);
-    if (isNaN(takeoffGmt.getTime())) throw new Error("離陸時刻の解析に失敗しました");
+    // --- 離陸時刻の解析 (Safari対応版) ---
+    const takeoffGmt = parseGmtDateTime(firstDataLine[idxDate], firstDataLine[idxTime]);
+    
+    if (isNaN(takeoffGmt.getTime())) {
+        throw new Error(`離陸時刻の解析に失敗しました。値をご確認ください:\n日付:${firstDataLine[idxDate]}\n時刻:${firstDataLine[idxTime]}`);
+    }
 
     // 2. 飛行時間の解析と着陸時刻の計算
     const flyTimeStr = lastDataLine[idxFlyTime]; 
     const timeMatch = flyTimeStr.match(/(\d+)m\s*(\d+\.\d+)s/);
     let totalSeconds = 0;
     if (timeMatch) {
-        totalSeconds = (parseInt(timeMatch[1]) * 60) + parseFloat(timeMatch[2]);
+        totalSeconds = (parseInt(timeMatch[1], 10) * 60) + parseFloat(timeMatch[2]);
     }
     const landingGmt = new Date(takeoffGmt.getTime() + totalSeconds * 1000);
 
@@ -82,7 +119,6 @@ function renderRow(data) {
     if (noDataRow) noDataRow.remove();
 
     const newRow = document.createElement('tr');
-    // 列の順番を 日付 -> ドローン名 -> ... に修正
     newRow.innerHTML = `
         <td>${data.date}</td>
         <td>${data.name}</td>
@@ -123,5 +159,6 @@ function clearTable() {
 
 function parseCsvLine(line) {
     if (!line) return [];
+    // カンマ区切り。引用符がある場合を考慮してトリム
     return line.split(',').map(item => item.replace(/^["']|["']$/g, '').trim());
 }

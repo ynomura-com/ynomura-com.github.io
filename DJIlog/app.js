@@ -21,6 +21,7 @@ document.getElementById('fileInput').addEventListener('change', async (e) => {
 
 /**
  * 逆ジオコーディング (OpenStreetMap Nominatim API)
+ * ユーザー様提供の最適化された住所抽出ロジックを採用
  */
 async function getAddress(lat, lon) {
     if (!lat || !lon || isNaN(lat) || isNaN(lon) || (lat === 0 && lon === 0)) {
@@ -35,10 +36,12 @@ async function getAddress(lat, lon) {
         
         if (data && data.address) {
             const a = data.address;
+            // 日本の住所体系に合わせた並び（郡や丁目・街区を追加）
             const parts = [
                 a.province || a.prefecture || "",
+                a.county || "",
                 a.city || a.town || a.village || a.suburb || "",
-                a.road || a.neighbourhood || ""
+                a.quarter || a.neighbourhood || a.road || ""
             ];
             const joined = parts.join("").trim();
             return joined || data.display_name.split(',')[0];
@@ -97,7 +100,7 @@ async function processCsv(text) {
     const takeoffGmt = parseGmtDateTime(firstDataLine[idxDate], firstDataLine[idxTime]);
     if (isNaN(takeoffGmt.getTime())) throw new Error("離陸時刻の解析に失敗しました");
 
-    // 2. 離陸場所の座標決定 (0の場合は以降を検索)
+    // 2. 離陸座標の決定 (0の場合は以降を検索)
     let tLat = parseFloat(firstDataLine[idxLat]);
     let tLon = parseFloat(firstDataLine[idxLon]);
     if (!tLat || !tLon || (tLat === 0 && tLon === 0)) {
@@ -112,11 +115,11 @@ async function processCsv(text) {
         }
     }
 
-    // 3. 着陸場所の座標決定 (最終行を使用)
+    // 3. 着陸座標の決定
     let lLat = parseFloat(lastDataLine[idxLat]);
     let lLon = parseFloat(lastDataLine[idxLon]);
 
-    // 4. 住所の取得 (離陸と着陸を同時にリクエスト)
+    // 4. 住所の取得 (並列実行)
     const [takeoffLocation, landingLocation] = await Promise.all([
         getAddress(tLat, tLon),
         getAddress(lLat, lLon)
@@ -147,7 +150,7 @@ async function processCsv(text) {
         height: (parseFloat(lastDataLine[idxHeight] || 0) * 0.3048).toFixed(1),
         speed: (parseFloat(lastDataLine[idxHSpeed] || 0) * 1.60934).toFixed(2),
         takeoffLocation: takeoffLocation,
-        landingLocation: landingLocation // 追加
+        landingLocation: landingLocation
     };
 
     renderRow(rowData);
@@ -173,7 +176,20 @@ function renderRow(data) {
     resultBody.appendChild(newRow);
 }
 
-// copyToTsv や clearTable の colspan も 9 に合わせる
+function copyToTsv() {
+    const table = document.getElementById('resultTable');
+    if (!table || document.querySelector('.no-data-row')) {
+        alert("コピーするデータがありません");
+        return;
+    }
+    const rows = Array.from(table.querySelectorAll('tr'));
+    const tsvContent = rows.map(row => {
+        const cells = Array.from(row.querySelectorAll('th, td'));
+        return cells.map(cell => cell.innerText).join('\t');
+    }).join('\n');
+    navigator.clipboard.writeText(tsvContent).then(() => alert("TSV形式でコピーしました。"));
+}
+
 function clearTable() {
     if (!confirm("表示されているデータをすべて削除しますか？")) return;
     const resultBody = document.getElementById('resultBody');

@@ -569,9 +569,8 @@
       bar.style.display = 'flex';
       document.getElementById('stat-count').textContent = flightData.length;
       const totalSecs = flightData.reduce((s, r) => s + (r._durationSecs || 0), 0);
-      const tm = Math.floor(totalSecs / 60);
-      const ts = totalSecs % 60;
-      document.getElementById('stat-total-time').textContent = ts > 0 ? `${tm}分${ts}秒` : `${tm}分`;
+      const totalMins = Math.round(totalSecs / 60 * 10) / 10;
+      document.getElementById('stat-total-time').textContent = `${totalMins.toFixed(1)}分`;
       const maxAlt = Math.max(...flightData.map(r => parseFloat(r.maxAlt) || 0));
       document.getElementById('stat-max-alt').textContent = maxAlt > 0 ? maxAlt + 'm' : 'N/A';
       const maxSpd = Math.max(...flightData.map(r => parseFloat(r.maxSpeed) || 0));

@@ -1,0 +1,39 @@
+{
+  "name": "Base64 変換アプリ",
+  "short_name": "B64",
+  "description": "テキストをBase64でエンコード・デコードするPWAアプリ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0c29",
+  "theme_color": "#00f5d4",
+  "orientation": "portrait-primary",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "エンコード",
+      "short_name": "Encode",
+      "description": "テキストをBase64にエンコード",
+      "url": "./index.html?mode=encode"
+    },
+    {
+      "name": "デコード",
+      "short_name": "Decode",
+      "description": "Base64をテキストにデコード",
+      "url": "./index.html?mode=decode"
+    }
+  ]
+}

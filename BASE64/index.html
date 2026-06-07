@@ -1,103 +1,598 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base64変換アプリ</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            padding-top: 50px;
-            background-color: #f4f4f9;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            width: 400px;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: vertical;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0097a7">
+  <meta name="description" content="テキストをBase64でエンコード・デコードするPWAアプリ">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B64">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+  <title>BASE64</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+
+    :root {
+      --bg:        #f0f4f8;
+      --surface:   #ffffff;
+      --border:    #d0dce8;
+      --teal:      #0097a7;
+      --blue:      #0277bd;
+      --dim:       #90a4b4;
+      --text:      #1a2a3a;
+      --label:     #5a7080;
+      --danger:    #d32f2f;
+      --radius:    12px;
+      --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+      --font-jp:   'Zen Kaku Gothic New', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-jp);
+      overflow-x: hidden;
+    }
+
+    /* Subtle dot grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(0,151,167,0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Soft gradient wash */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(224,242,251,0.6) 0%, rgba(240,244,248,0) 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 32px;
+      gap: 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      letter-spacing: 0.2em;
+      color: var(--teal);
+      line-height: 1;
+      text-shadow: 0 0 18px rgba(0,151,167,0.3);
+    }
+
+    .header-text p {
+      font-size: 0.7rem;
+      color: var(--label);
+      letter-spacing: 0.1em;
+      margin-top: 3px;
+    }
+
+    /* Offline badge */
+    .badge {
+      margin-left: auto;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--dim);
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.4s;
+    }
+    .badge.online { border-color: var(--teal); color: var(--teal); }
+    .badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+      opacity: 0.5;
+    }
+
+    .card-header {
+      padding: 12px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--label);
+      text-transform: uppercase;
+    }
+
+    .char-count {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--dim);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: vertical;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--text);
+      caret-color: var(--teal);
+    }
+
+    textarea::placeholder {
+      color: var(--dim);
+      opacity: 0.6;
+    }
+
+    textarea:focus {
+      background: rgba(0,245,212,0.015);
+    }
+
+    /* ── Action area ── */
+    .actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--teal);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn:active::after { opacity: 0.08; }
+
+    .btn-encode {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+    .btn-encode:hover {
+      background: rgba(0,151,167,0.08);
+      box-shadow: 0 0 20px rgba(0,151,167,0.2), inset 0 0 20px rgba(0,151,167,0.05);
+    }
+
+    .btn-decode {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .btn-decode:hover {
+      background: rgba(2,119,189,0.08);
+      box-shadow: 0 0 20px rgba(2,119,189,0.2), inset 0 0 20px rgba(2,119,189,0.05);
+    }
+
+    .btn-icon { font-size: 1rem; }
+
+    /* ── Utility row ── */
+    .utils {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .util-btn {
+      flex: 1;
+      padding: 9px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--label);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .util-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface);
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      padding: 10px 20px;
+      border-radius: 40px;
+      box-shadow: 0 4px 20px rgba(0,151,167,0.25);
+      z-index: 1000;
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+      white-space: nowrap;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.error {
+      border-color: var(--danger);
+      color: var(--danger);
+      box-shadow: 0 0 20px rgba(255,77,109,0.3);
+    }
+
+    /* ── Install prompt ── */
+    .install-banner {
+      display: none;
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(135deg, rgba(0,151,167,0.08), rgba(2,119,189,0.06));
+      border: 1px solid rgba(0,151,167,0.3);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      align-items: center;
+      gap: 12px;
+    }
+    .install-banner.visible { display: flex; }
+    .install-banner p {
+      flex: 1;
+      font-size: 0.78rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .install-banner p span {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--label);
+      margin-top: 2px;
+    }
+    .install-btn {
+      padding: 8px 16px;
+      background: var(--teal);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .install-btn:hover { opacity: 0.85; }
+
+    /* ── Footer ── */
+    footer {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--dim);
+      letter-spacing: 0.12em;
+      opacity: 0.5;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .actions, .utils, .install-banner {
+      animation: fadeSlideIn 0.4s ease both;
+    }
+    .actions { animation-delay: 0.1s; }
+    .utils   { animation-delay: 0.15s; }
+
+    /* Processing flash on button */
+    .btn.processing {
+      animation: pulse 0.4s ease;
+    }
+    @keyframes pulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+  </style>
 </head>
 <body>
+<div class="app">
 
-<div class="container">
-    <label for="text1">テキストボックス 1 (平文)</label>
-    <textarea id="text1" placeholder="変換したい文字を入力してください"></textarea>
-
-    <div class="button-group">
-        <button id="encodeBtn">Encode ↓</button>
-        <button id="decodeBtn">Decode ↑</button>
+  <header>
+    <img class="logo" src="icons/icon-192x192.png" alt="B64 logo">
+    <div class="header-text">
+      <h1>BASE64</h1>
+      <p>エンコード / デコード ツール</p>
     </div>
+    <div class="badge" id="networkBadge">OFFLINE</div>
+  </header>
 
-    <label for="text2" style="margin-top: 15px;">テキストボックス 2 (Base64)</label>
-    <textarea id="text2" placeholder="Base64コードがここに表示されます"></textarea>
+  <!-- Install banner (shown when installable) -->
+  <div class="install-banner" id="installBanner">
+    <p>
+      ホーム画面に追加
+      <span>オフラインでも使えます</span>
+    </p>
+    <button class="install-btn" id="installBtn">インストール</button>
+  </div>
+
+  <!-- Plain text box -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">📄 PLAIN TEXT</span>
+      <span class="char-count" id="count1">0 文字</span>
+    </div>
+    <textarea id="text1"
+      placeholder="変換したい文字を入力してください..."
+      spellcheck="false"
+      autocorrect="off"
+      autocomplete="off"></textarea>
+  </div>
+
+  <!-- Encode / Decode buttons -->
+  <div class="actions">
+    <button class="btn btn-encode" id="encodeBtn">
+      <span class="btn-icon">⬇</span> ENCODE
+    </button>
+    <button class="btn btn-decode" id="decodeBtn">
+      <span class="btn-icon">⬆</span> DECODE
+    </button>
+  </div>
+
+  <!-- Base64 box -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-label">🔐 BASE64</span>
+      <span class="char-count" id="count2">0 文字</span>
+    </div>
+    <textarea id="text2"
+      placeholder="Base64 コードがここに表示されます..."
+      spellcheck="false"
+      autocorrect="off"
+      autocomplete="off"></textarea>
+  </div>
+
+  <!-- Utility buttons -->
+  <div class="utils">
+    <button class="util-btn" id="copyPlain">📋 平文コピー</button>
+    <button class="util-btn" id="copyB64">📋 B64コピー</button>
+    <button class="util-btn" id="clearBtn">🗑 クリア</button>
+  </div>
+
+  <footer>PWA · OFFLINE READY · BASE64 ENCODER / DECODER</footer>
 </div>
 
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
 <script>
-    const text1 = document.getElementById('text1');
-    const text2 = document.getElementById('text2');
-    const encodeBtn = document.getElementById('encodeBtn');
-    const decodeBtn = document.getElementById('decodeBtn');
-
-    // Encodeボタンの処理
-    encodeBtn.addEventListener('click', () => {
-        try {
-            // btoaはUnicodeを直接扱えないため、UTF-8への対応を行う
-            const str = text1.value;
-            const encoded = btoa(unescape(encodeURIComponent(str)));
-            text2.value = encoded;
-        } catch (e) {
-            alert('エンコードに失敗しました。');
-        }
+  // ── Service Worker registration ──
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('[SW] Registered:', reg.scope))
+        .catch(err => console.warn('[SW] Error:', err));
     });
+  }
 
-    // Decodeボタンの処理
-    decodeBtn.addEventListener('click', () => {
-        try {
-            const str = text2.value;
-            const decoded = decodeURIComponent(escape(atob(str)));
-            text1.value = decoded;
-        } catch (e) {
-            alert('有効なBase64形式ではありません。');
-        }
-    });
+  // ── PWA Install prompt ──
+  let deferredPrompt = null;
+  const installBanner = document.getElementById('installBanner');
+  const installBtn = document.getElementById('installBtn');
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBanner.classList.add('visible');
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      installBanner.classList.remove('visible');
+      showToast('✓ インストールしました');
+    }
+    deferredPrompt = null;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installBanner.classList.remove('visible');
+    deferredPrompt = null;
+  });
+
+  // ── Network status ──
+  const networkBadge = document.getElementById('networkBadge');
+  function updateNetwork() {
+    const online = navigator.onLine;
+    networkBadge.textContent = online ? 'ONLINE' : 'OFFLINE';
+    networkBadge.classList.toggle('online', online);
+  }
+  updateNetwork();
+  window.addEventListener('online',  updateNetwork);
+  window.addEventListener('offline', updateNetwork);
+
+  // ── Elements ──
+  const text1    = document.getElementById('text1');
+  const text2    = document.getElementById('text2');
+  const count1   = document.getElementById('count1');
+  const count2   = document.getElementById('count2');
+  const encodeBtn = document.getElementById('encodeBtn');
+  const decodeBtn = document.getElementById('decodeBtn');
+
+  // ── Character count ──
+  function updateCount(textarea, counter) {
+    const len = textarea.value.length;
+    counter.textContent = len.toLocaleString('ja-JP') + ' 文字';
+  }
+  text1.addEventListener('input', () => updateCount(text1, count1));
+  text2.addEventListener('input', () => updateCount(text2, count2));
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast');
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.className = 'toast' + (isError ? ' error' : '');
+    // Force reflow
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  // ── Encode ──
+  encodeBtn.addEventListener('click', () => {
+    try {
+      const str = text1.value;
+      if (!str) { showToast('テキストを入力してください', true); return; }
+      const encoded = btoa(unescape(encodeURIComponent(str)));
+      text2.value = encoded;
+      updateCount(text2, count2);
+      encodeBtn.classList.add('processing');
+      setTimeout(() => encodeBtn.classList.remove('processing'), 400);
+      showToast('✓ エンコード完了');
+    } catch {
+      showToast('エンコードに失敗しました', true);
+    }
+  });
+
+  // ── Decode ──
+  decodeBtn.addEventListener('click', () => {
+    try {
+      const str = text2.value.trim();
+      if (!str) { showToast('Base64を入力してください', true); return; }
+      const decoded = decodeURIComponent(escape(atob(str)));
+      text1.value = decoded;
+      updateCount(text1, count1);
+      decodeBtn.classList.add('processing');
+      setTimeout(() => decodeBtn.classList.remove('processing'), 400);
+      showToast('✓ デコード完了');
+    } catch {
+      showToast('有効なBase64形式ではありません', true);
+    }
+  });
+
+  // ── Copy ──
+  async function copyText(value, label) {
+    if (!value) { showToast('コピーするテキストがありません', true); return; }
+    try {
+      await navigator.clipboard.writeText(value);
+      showToast(`✓ ${label}をコピーしました`);
+    } catch {
+      showToast('コピーに失敗しました', true);
+    }
+  }
+  document.getElementById('copyPlain').addEventListener('click', () => copyText(text1.value, '平文'));
+  document.getElementById('copyB64').addEventListener('click',   () => copyText(text2.value, 'Base64'));
+
+  // ── Clear ──
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    text1.value = '';
+    text2.value = '';
+    updateCount(text1, count1);
+    updateCount(text2, count2);
+    showToast('クリアしました');
+  });
+
+  // ── URL shortcut mode ──
+  const params = new URLSearchParams(location.search);
+  if (params.get('mode') === 'encode') text1.focus();
+  if (params.get('mode') === 'decode') text2.focus();
 </script>
-
 </body>
 </html>

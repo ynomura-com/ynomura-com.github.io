@@ -3,7 +3,7 @@
 ## DJI 製ドローンの飛行記録作成に便利なアプリ
 
 ### DJI飛行ログファイルの解析アプリ for  DJI Flight Log Viewer
-<img alt="アイコン" src="DJIlog/PWA/icons/icon512.png" width="64">
+<img alt="アイコン" src="DJIlog/PWA/icon.png" width="64">
 
 ・DJI Fly の Flight Log ファイルを DJI Flight Log Viewer サイトで CSV.zip にしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
 

@@ -1,4 +1,4 @@
-# DJI 飛行記録解析 for Open DroneLog CSV
+# DJI 飛行記録解析アプリ （Open DroneLog CSV 用）
 
 Open DroneLog でエクスポートした CSV ファイルを読み込み、飛行記録を一覧表示する PWA アプリです。
 

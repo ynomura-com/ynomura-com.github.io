@@ -10,6 +10,7 @@
  　[DJI 飛行ログ解析アプリ for csv.zip へのリンク](./DJIlog/PWA/)
   
 ### DJI飛行ログファイルの解析アプリ for  Open DroneLog CSV
+<img alt="アイコン" src="OpenDroneLog-CSV/PWA/icon192.png" width="64" align="left">
 
 ・DJI Fly の Flight Log ファイルを Open DroneLog アプリで CSV でエクスポートしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
 

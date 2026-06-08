@@ -6,7 +6,7 @@
 
 ・DJI Fly の Flight Log ファイルを DJI Flight Log Viewer サイトで CSV.zip にしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
 
- 　[DJI 飛行ログ解析アプリ for csv.zip へのリンク](./DJIlog/)
+ 　[DJI 飛行ログ解析アプリ for csv.zip へのリンク](./DJIlog/PWA/)
   
 ### DJI飛行ログファイルの解析アプリ for  Open DroneLog CSV
 
@@ -18,7 +18,7 @@
 
  ・ドローンを飛行させた際に離着陸の時刻を現場でメモするための PWA アプリ
 
-　[飛行メモアプリへのリンク](./DroneMemo/)
+　[飛行メモアプリへのリンク](./DroneMemo/PWA/)
  
 
 ## その他便利なアプリ
@@ -27,13 +27,13 @@
 
  　BASE64 でエンコード、デコードをする PWA アプリです。
 
-  [BASE64エンコード／デコードアプリへのリンク](./BASE64)
+  [BASE64エンコード／デコードアプリへのリンク](./BASE64/PWA/)
 
 ### AnalogClock
 
   　アナログ時計を表示する PWA アプリです。
 
-   [アナログ時計へのリンク](./AnalogClock/index.html)
+   [アナログ時計へのリンク](./AnalogClock/PWA/
    
  
 ## 後は未定

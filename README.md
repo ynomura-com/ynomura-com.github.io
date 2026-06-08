@@ -17,6 +17,7 @@
  　[DJI 飛行ログ解析アプリ for CSV へのリンク](./OpenDroneLog-CSV/PWA/)
 
 ### 飛行メモアプリ
+<img alt="アイコン" src="DroneMemo/PWA/icon192.png" width="64" align="left">
 
  ・ドローンを飛行させた際に離着陸の時刻を現場でメモするための PWA アプリ
  

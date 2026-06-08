@@ -1,24 +1,34 @@
-# ドローンを飛行させる際に有用なアプリなどを公開します
+# 自分用に作ったアプリを公開します
 
-## DJI飛行ログファイルの解析アプリ（DJI Flight Log Analyzer）
+## DJI 製ドローンの飛行記録作成に便利なアプリ
 
-・DJI Fly のログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
+### DJI飛行ログファイルの解析アプリ for  DJI Flight Log Viewer
 
- 　[DJI 飛行ログ解析アプリへのリンク](./DJIlog/)
+・DJI Fly の Flight Log ファイルを DJI Flight Log Viewer サイトで CSV.zip にしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
 
-## 飛行メモアプリ
+ 　[DJI 飛行ログ解析アプリ for csv.zip へのリンク](./DJIlog/)
+  
+### DJI飛行ログファイルの解析アプリ for  Open DroneLog CSV
+
+・DJI Fly の Flight Log ファイルを Open DroneLog アプリで CSV でエクスポートしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
+
+ 　[DJI 飛行ログ解析アプリ for CSV へのリンク](./OpenDroneLog-CSV/)
+
+### 飛行メモアプリ
 
  ・ドローンを飛行させた際に離着陸の時刻を現場でメモするための PWA アプリ
 
 　[飛行メモアプリへのリンク](./DroneMemo/)
 
- ## BASE64 エンコード／デコード
+ ## その他便利なアプリ
+
+ ### BASE64 エンコード／デコード
 
  　BASE64 でエンコード、デコードをする PWA アプリです。
 
   [BASE64エンコード／デコードアプリへのリンク](./BASE64)
 
-  ## AnalogClock
+  ### AnalogClock
 
   　アナログ時計を表示する PWA アプリです。
 

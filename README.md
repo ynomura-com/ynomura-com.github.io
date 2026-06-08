@@ -12,7 +12,7 @@
 
 ・DJI Fly の Flight Log ファイルを Open DroneLog アプリで CSV でエクスポートしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
 
- 　[DJI 飛行ログ解析アプリ for CSV へのリンク](./OpenDroneLog-CSV/)
+ 　[DJI 飛行ログ解析アプリ for CSV へのリンク](./OpenDroneLog-CSV/PWA/)
 
 ### 飛行メモアプリ
 

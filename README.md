@@ -29,9 +29,9 @@
 ## その他便利なアプリ
 
 ### BASE64 エンコード／デコード
-<img alt="アイコン" BASE64/PWA/icons/icon-192x192.png" width="64" align="left">
+<img alt="アイコン"BASE64/PWA/icons/icon-192x192.png" width="64" align="left">
 
- 　BASE64 でエンコード、デコードをする PWA アプリです。
+ ・BASE64 でエンコード、デコードをする PWA アプリです。
 
   [BASE64エンコード／デコードアプリへのリンク](./BASE64/PWA/)
 

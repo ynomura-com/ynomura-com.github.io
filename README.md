@@ -36,7 +36,7 @@
   [BASE64エンコード／デコードアプリへのリンク](./BASE64/PWA/)
 
 ### AnalogClock
-<img alt="アイコン" src="AnalogClock/PWA/icon192.png" width="64" align="left">
+<img alt="アイコン" src="AnalogClock/PWA/icon-192.png" width="64" align="left">
 
 
   ・アナログ時計を表示する PWA アプリです。

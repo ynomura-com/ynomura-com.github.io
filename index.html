@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>アナログ時計</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
+    }
+    .clock-svg text { font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <svg id="clock" class="clock-svg" width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="150" cy="150" r="145" fill="#ffffff" stroke="#333333" stroke-width="8"/>
+    <circle cx="150" cy="150" r="136" fill="none" stroke="#dddddd" stroke-width="1"/>
+    <g id="ticks"></g>
+    <g id="numbers"></g>
+    <text id="digital" x="150" y="210" text-anchor="middle" font-size="14" font-weight="500" fill="#666666" font-family="sans-serif" letter-spacing="2"></text>
+    <line id="hour-hand" x1="150" y1="150" x2="150" y2="80" stroke="#333333" stroke-width="6" stroke-linecap="round"/>
+    <line id="min-hand" x1="150" y1="150" x2="150" y2="55" stroke="#666666" stroke-width="4" stroke-linecap="round"/>
+    <line id="sec-hand" x1="150" y1="165" x2="150" y2="45" stroke="#cc0000" stroke-width="2" stroke-linecap="round"/>
+    <circle id="sec-tip" cx="150" cy="45" r="4" fill="#cc0000"/>
+    <circle cx="150" cy="150" r="6" fill="#333333"/>
+    <circle cx="150" cy="150" r="3" fill="#cc0000"/>
+  </svg>
+  <script>
+    const NS = 'http://www.w3.org/2000/svg';
+    function createEl(tag, attrs) {
+      const el = document.createElementNS(NS, tag);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      return el;
+    }
+    const ticksG = document.getElementById('ticks');
+    for (let i = 0; i < 60; i++) {
+      const angle = i * 6 * Math.PI / 180;
+      const isHour = i % 5 === 0;
+      const outerR = 136, innerR = isHour ? 120 : 128;
+      const x1 = 150 + outerR * Math.sin(angle), y1 = 150 - outerR * Math.cos(angle);
+      const x2 = 150 + innerR * Math.sin(angle), y2 = 150 - innerR * Math.cos(angle);
+      ticksG.appendChild(createEl('line', {x1,y1,x2,y2,
+        stroke: isHour ? '#333333' : '#999999',
+        'stroke-width': isHour ? 3 : 1.5,
+        'stroke-linecap': 'round'}));
+    }
+    const numsG = document.getElementById('numbers');
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i - 3) * 30 * Math.PI / 180, r = 108;
+      const x = 150 + r * Math.cos(angle), y = 150 + r * Math.sin(angle);
+      const t = createEl('text', {x, y,
+        'text-anchor': 'middle', 'dominant-baseline': 'central',
+        'font-size': '16', 'font-weight': '500', fill: '#333333'});
+      t.textContent = i;
+      numsG.appendChild(t);
+    }
+    const hourHand = document.getElementById('hour-hand');
+    const minHand  = document.getElementById('min-hand');
+    const secHand  = document.getElementById('sec-hand');
+    const secTip   = document.getElementById('sec-tip');
+    const digital  = document.getElementById('digital');
+    function handCoords(angleDeg, length, tail = 0) {
+      const rad = (angleDeg - 90) * Math.PI / 180;
+      return {
+        x1: 150 - tail * Math.cos(rad), y1: 150 - tail * Math.sin(rad),
+        x2: 150 + length * Math.cos(rad), y2: 150 + length * Math.sin(rad)
+      };
+    }
+    function update() {
+      const now = new Date();
+      const s = now.getSeconds(), m = now.getMinutes(), h = now.getHours() % 12;
+      const sc = handCoords(s * 6, 105, 15);
+      secHand.setAttribute('x1', sc.x1); secHand.setAttribute('y1', sc.y1);
+      secHand.setAttribute('x2', sc.x2); secHand.setAttribute('y2', sc.y2);
+      secTip.setAttribute('cx', sc.x2); secTip.setAttribute('cy', sc.y2);
+      const mc = handCoords(m * 6 + s * 0.1, 95, 0);
+      minHand.setAttribute('x1', mc.x1); minHand.setAttribute('y1', mc.y1);
+      minHand.setAttribute('x2', mc.x2); minHand.setAttribute('y2', mc.y2);
+      const hc = handCoords(h * 30 + m * 0.5, 70, 0);
+      hourHand.setAttribute('x1', hc.x1); hourHand.setAttribute('y1', hc.y1);
+      hourHand.setAttribute('x2', hc.x2); hourHand.setAttribute('y2', hc.y2);
+      digital.textContent =
+        String(now.getHours()).padStart(2,'0') + ':' +
+        String(m).padStart(2,'0') + ':' +
+        String(s).padStart(2,'0');
+    }
+    update();
+    setInterval(update, 1000);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

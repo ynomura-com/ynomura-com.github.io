@@ -3,7 +3,7 @@
   "name": "DJI 飛行記録 for Open DroneLog CSV",
   "icons": [
     {
-      "src": "/app_icon.png",
+      "src": "app_icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }

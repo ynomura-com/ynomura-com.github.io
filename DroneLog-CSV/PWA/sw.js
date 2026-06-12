@@ -1,8 +1,11 @@
-const CACHE_NAME = 'dji-drone-log-cache-v2';
+const CACHE_NAME = 'dji-drone-log-cache-v3';
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json'
+  './main.js',
+  './utils.js',
+  './manifest.json',
+  './app_icon.png'
 ];
 
 self.addEventListener('install', (event) => {

@@ -8,8 +8,7 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" type="image/png" href="./app_icon.png" />
     <link rel="apple-touch-icon" href="./app_icon.png" />
-    <script type="module" crossorigin src="./assets/index-BG6_EMpE.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-o6cB1b79.css">
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-slate-50 text-slate-800 antialiased selection:bg-sky-500/10 selection:text-sky-700">
     <div id="app" class="min-h-screen pb-16 flex flex-col items-center px-4 md:px-8 font-sans transition duration-200">
@@ -92,43 +91,37 @@
             <div>
               <h3 class="text-sm font-bold text-slate-900 mb-1">アクションコントロール</h3>
               <p class="text-xs text-slate-400 leading-relaxed">
-                解析したフライトログを一時的に保持・マージして表示します。いつでもTSVとして他のドキュメントにコピーできます。
+                解析したフライトログを保持・マージして表示します。TSVコピーや一覧クリアもワンタップで快適に行えます。
               </p>
             </div>
             
-            <div class="flex flex-col space-y-2">
-              <!-- TSVとしてコピー -->
-              <button
-                id="btn-copy-tsv"
-                disabled
-                class="flex items-center justify-center space-x-2 px-4 py-2.5 bg-slate-100 text-slate-400 cursor-not-allowed text-xs font-semibold rounded-xl transition duration-150 select-none border border-slate-100"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-5 10h5m-5 4h5" />
-                </svg>
-                <span>TSVとしてコピー (Excel等に貼り付け可)</span>
-              </button>
+            <div class="space-y-2">
+              <!-- 左右配置のグリッド -->
+              <div class="grid grid-cols-2 gap-2">
+                <!-- TSVとしてコピー -->
+                <button
+                  id="btn-copy-tsv"
+                  disabled
+                  class="flex items-center justify-center space-x-1 px-3 py-2 bg-slate-100 text-slate-400 cursor-not-allowed text-xs font-semibold rounded-xl transition duration-150 select-none border border-slate-100/70"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-5 10h5m-5 4h5" />
+                  </svg>
+                  <span>TSVコピー</span>
+                </button>
 
-              <!-- 内容をクリア -->
-              <button
-                id="btn-clear-content"
-                disabled
-                class="flex items-center justify-center space-x-2 px-4 py-2.5 bg-rose-50 text-rose-400 cursor-not-allowed text-xs font-semibold rounded-xl transition duration-150 select-none border border-rose-100/50"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                <span>一覧をクリア</span>
-              </button>
-
-              <!-- デモ用（テスト用データ）のロード -->
-              <button
-                id="btn-demo-load"
-                class="flex items-center justify-center space-x-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100/80 active:bg-amber-100 border border-amber-200/60 text-amber-800 text-xs font-semibold rounded-xl transition duration-150 select-none"
-              >
-                <span>🧪</span>
-                <span>テスト用データをロード (即時体験)</span>
-              </button>
+                <!-- 一覧をクリア -->
+                <button
+                  id="btn-clear-content"
+                  disabled
+                  class="flex items-center justify-center space-x-1 px-3 py-2 bg-rose-50/55 text-rose-400 cursor-not-allowed text-xs font-semibold rounded-xl transition duration-150 select-none border border-rose-100/30"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <span>一覧をクリア</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -225,109 +218,7 @@
           </div>
         </div>
 
-        <!-- PWAデプロイ ＆ ダウンロードセクション -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- PWA パッケージダウンロード -->
-          <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center space-x-2 mb-1.5 select-none">
-                <span class="text-xl">📦</span>
-                <h3 class="font-bold text-slate-900 text-sm">PWAデプロイ用パッケージ一覧</h3>
-              </div>
-              <p class="text-xs text-slate-500 leading-relaxed">
-                完成したこのアプリをご自身のサーバーに設置して本番公開できます。用途に合わせて2つの配布形式から選んでダウンロードしてください。
-              </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- 静的PWA用 -->
-              <div class="border border-slate-100 p-4 rounded-xl hover:border-sky-200 transition bg-slate-50/50 flex flex-col justify-between">
-                <div>
-                  <h4 class="text-xs font-bold text-slate-800 mb-1">① 静的ホスティング用 (dist.zip)</h4>
-                  <p class="text-[11px] text-slate-400 leading-relaxed mb-3">
-                    Netlify、Vercel、GitHub Pages、または通常の汎用レンタルサーバー等にそのままアップロードすれば完全稼働する、本番ビルド済みの軽量なPWA静的ファイル一式。
-                  </p>
-                </div>
-                <button
-                  id="btn-download-static"
-                  class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-xs transition duration-150 cursor-pointer select-none"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span>静的PWAをダウンロード</span>
-                </button>
-              </div>
 
-              <!-- フルスタック用 -->
-              <div class="border border-slate-100 p-4 rounded-xl hover:border-amber-200 transition bg-slate-50/50 flex flex-col justify-between">
-                <div>
-                  <h4 class="text-xs font-bold text-slate-800 mb-1">② フルスタック用 (codebase.zip)</h4>
-                  <p class="text-[11px] text-slate-400 leading-relaxed mb-3">
-                    APIサーバー（住所自動解決機能）からPWAまですべてをご自身の管理インフラで完全展開したい方向け。必要な全ファイルが含まれるNode.js/Expressソース一式。
-                  </p>
-                </div>
-                <button
-                  id="btn-download-fullstack"
-                  class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-xs transition duration-150 cursor-pointer select-none"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span>フルスタックソースコード</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- API 接続先カスタム設定 -->
-          <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between space-y-4">
-            <div>
-              <div class="flex items-center space-x-2 mb-1.5 select-none">
-                <span class="text-xl">🌍</span>
-                <h3 class="font-bold text-slate-900 text-sm">他サーバー設置時のAPI設定</h3>
-              </div>
-              <p class="text-xs text-slate-500 leading-relaxed">
-                上記の「① 静的PWA」をご自身のサーバーに設置した際、日本住所逆解決を有効にするため、通信先のAPIサーバーアドレス（本プレビューサーバーなど）を自由に指定できます。
-              </p>
-            </div>
-
-            <div class="space-y-3">
-              <div>
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 select-none">逆ジオコーディング API URL</label>
-                <input
-                  type="url"
-                  id="input-custom-api-url"
-                  placeholder="例: /api/geocode"
-                  class="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl focus:outline-none focus:border-sky-500 font-mono"
-                />
-              </div>
-
-              <div class="flex space-x-2">
-                <button
-                  id="btn-save-api-url"
-                  class="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-900 active:bg-slate-950 text-white text-xs font-bold rounded-lg shadow-xs transition cursor-pointer text-center select-none"
-                >
-                  設定を保存
-                </button>
-                <button
-                  id="btn-reset-api-url"
-                  class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition cursor-pointer text-center select-none"
-                >
-                  初期化
-                </button>
-              </div>
-              
-              <!-- 現在のサーバーをAPIとするショートカット -->
-              <button
-                id="btn-use-current-as-api"
-                class="w-full py-2 text-center text-[10px] text-sky-600 hover:text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-100 rounded-lg transition cursor-pointer font-semibold block select-none"
-              >
-                現在のこのサーバーをAPIとして登録する
-              </button>
-            </div>
-          </div>
-        </div>
 
         <!-- PWA / 技術仕様詳細セクション -->
         <section class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 select-none">
@@ -382,6 +273,7 @@
       </footer>
     </div>
     
+    <script type="module" src="./main.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

@@ -3,14 +3,15 @@
   "name": "DJI 飛行記録 for Open DroneLog CSV",
   "icons": [
     {
-      "src": "app_icon.png",
+      "src": "./app_icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "./",
   "background_color": "#f8fafc",
   "theme_color": "#0284c7",
   "display": "standalone",
   "orientation": "portrait"
 }
+

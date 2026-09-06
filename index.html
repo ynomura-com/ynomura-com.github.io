@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現在の月齢と月面画像</title>
+    <link rel="icon" href="favicon.ico">
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 30px 40px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 400px;
+        }
+        h1 {
+            color: #ffffff;
+        }
+        #moon-image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+            margin: 20px 0;
+            background-color: #000;
+        }
+        #moon-age {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #61afef;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>本日の月齢と姿</h1>
+        
+        <div id="moon-image-container">
+            <p>画像を読み込み中...</p>
+        </div>
+
+        <div id="moon-age">読み込み中...</div>
+    </div>
+
+    <script>
+        async function fetchMoonData() {
+            const apiUrl = 'proxy.php';
+            const ageElement = document.getElementById('moon-age');
+            const imageContainer = document.getElementById('moon-image-container');
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('ネットワークエラーが発生しました');
+                }
+                const data = await response.json();
+
+                if (data.age !== undefined) {
+                    const roundedAge = Number(data.age).toFixed(1);
+                    ageElement.textContent = "月齢： " + roundedAge + " 日";
+                } else {
+                    ageElement.textContent = "月齢データが見つかりませんでした";
+                }
+
+                if (data.image && data.image.url) {
+                    const imageUrl = data.image.url;
+                    imageContainer.innerHTML = `<img src="${imageUrl}" alt="本日の月">`;
+                } else {
+                    imageContainer.textContent = "月画像が見つかりませんでした";
+                }
+
+            } catch (error) {
+                console.error(error);
+                ageElement.textContent = "データの取得に失敗しました。";
+                imageContainer.textContent = "";
+            }
+        }
+
+        fetchMoonData();
+    </script>
+
+</body>
+</html>

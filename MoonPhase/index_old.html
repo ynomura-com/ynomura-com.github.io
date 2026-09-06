@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月齢と現在時刻</title>
+<style>
+  :root{
+    --bg-deep:   #060912;
+    --bg-mid:    #0d1526;
+    --panel:     #101a30;
+    --line:      #23324f;
+    --moonlight: #eee9dc;
+    --moonlight-dim: #b9b3a1;
+    --silver:    #8fa3c7;
+    --gold:      #c9a96e;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0;
+    height:100%;
+    background: var(--bg-deep);
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: "Iowan Old Style", "Palatino Linotype", "Hiragino Mincho ProN", "Yu Mincho", serif;
+    color: var(--moonlight);
+    background:
+      radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 78% 12%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 32% 68%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 88% 74%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.5px 1.5px at 8% 82%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 45% 90%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 95% 40%, rgba(255,255,255,.4), transparent),
+      radial-gradient(circle at 50% -10%, var(--bg-mid) 0%, var(--bg-deep) 60%);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .stage{
+    width: min(92vw, 560px);
+    padding: 56px 40px 48px;
+    text-align:center;
+  }
+
+  .moon-frame{
+    width: 216px;
+    height: 216px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(233,229,220,.06) 0%, rgba(233,229,220,0) 68%);
+    box-shadow:
+      0 0 0 1px rgba(143,163,199,.18),
+      0 0 60px rgba(201,169,110,.10);
+    position: relative;
+  }
+
+  .moon-frame img{
+    width: 84%;
+    height: 84%;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 18px rgba(233,229,220,.15));
+    background: #0a0e18;
+  }
+
+  .moon-frame .placeholder{
+    width: 84%;
+    height: 84%;
+    border-radius: 50%;
+    background: repeating-conic-gradient(#141d33 0deg 6deg, #101a30 6deg 12deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--silver);
+    font-size: 13px;
+    letter-spacing: .02em;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+  }
+
+  .age-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .age-number{
+    font-size: 34px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: .01em;
+  }
+
+  .age-unit{
+    font-size: 15px;
+    color: var(--moonlight-dim);
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+  }
+
+  .age-caption{
+    font-size: 12px;
+    color: var(--silver);
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    letter-spacing: .04em;
+    margin-bottom: 40px;
+  }
+
+  .divider{
+    width: 44px;
+    height: 1px;
+    background: var(--line);
+    margin: 0 auto 36px;
+  }
+
+  .clock-date{
+    font-size: 16px;
+    color: var(--moonlight-dim);
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    letter-spacing: .03em;
+    margin-bottom: 10px;
+  }
+
+  .clock-time{
+    font-size: clamp(48px, 11vw, 76px);
+    line-height: 1;
+    font-weight: 500;
+    color: var(--moonlight);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .01em;
+  }
+
+  .clock-time .colon{
+    color: var(--silver);
+    padding: 0 2px;
+  }
+
+  .status{
+    margin-top: 30px;
+    font-size: 11px;
+    color: #56618a;
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    letter-spacing: .03em;
+    min-height: 14px;
+  }
+
+  @media (max-width: 420px){
+    .stage{ padding: 40px 24px 36px; }
+    .moon-frame{ width: 176px; height: 176px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="moon-frame" id="moonFrame">
+      <div class="placeholder" id="moonPlaceholder">読み込み中</div>
+    </div>
+
+    <div class="age-row">
+      <span class="age-number" id="ageNumber">—</span>
+      <span class="age-unit">日</span>
+    </div>
+    <div class="age-caption">月齢</div>
+
+    <div class="divider"></div>
+
+    <div class="clock-date" id="clockDate">—</div>
+    <div class="clock-time" id="clockTime">--:--:--</div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+<script>
+  const dateEl = document.getElementById('clockDate');
+  const timeEl = document.getElementById('clockTime');
+  const ageEl = document.getElementById('ageNumber');
+  const moonFrame = document.getElementById('moonFrame');
+  const statusEl = document.getElementById('status');
+
+  const weekdays = ['日','月','火','水','木','金','土'];
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function renderClock(){
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth() + 1;
+    const d = now.getDate();
+    const w = weekdays[now.getDay()];
+    dateEl.textContent = `${y}年${m}月${d}日（${w}）`;
+    timeEl.innerHTML =
+      `${pad(now.getHours())}<span class="colon">:</span>${pad(now.getMinutes())}<span class="colon">:</span>${pad(now.getSeconds())}`;
+  }
+
+  function isoForApi(){
+    // システムの現在時刻(JSTなどローカル時刻)をUTCに変換してAPI用の文字列を作る
+    const now = new Date();
+    const y = now.getUTCFullYear();
+    const m = pad(now.getUTCMonth() + 1);
+    const d = pad(now.getUTCDate());
+    const hh = pad(now.getUTCHours());
+    const mm = pad(now.getUTCMinutes());
+    return `${y}-${m}-${d}T${hh}:${mm}`;
+  }
+
+  async function fetchJson(url){
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  async function fetchMoonData(){
+    if(location.protocol === 'file:'){
+      moonFrame.innerHTML = `<div class="placeholder">取得失敗</div>`;
+      statusEl.textContent = 'このファイルを file:// で直接開いているため、ブラウザの制限で外部データを取得できません。ローカルサーバー経由で開いてください（下記メッセージ参照）。';
+      console.error('This page was opened via file:// — browsers block fetch() to external origins from local files. Serve it over http:// instead, e.g.: python3 -m http.server, then open http://localhost:8000/月齢アプリ.html');
+      return;
+    }
+
+    const stamp = isoForApi();
+
+    // NASAのサーバーへブラウザから直接アクセスするとCORS制限にかかるため、
+    // 同一オリジン上の moon-proxy.php を経由して取得する（サーバー間通信にはCORSが適用されない）。
+    const proxyUrl = `moon-proxy.php?stamp=${encodeURIComponent(stamp)}`;
+
+    let data;
+    try{
+      data = await fetchJson(proxyUrl);
+    }catch(err){
+      moonFrame.innerHTML = `<div class="placeholder">取得失敗</div>`;
+      statusEl.textContent = 'moon-proxy.php 経由での取得に失敗しました。ファイルが同じフォルダに設置されているか、PHPが実行できているかご確認ください。';
+      console.error('Dial-A-Moon fetch via moon-proxy.php failed:', err);
+      return;
+    }
+
+    try{
+      // "image" はオブジェクト { url, filename, ... } なので url プロパティを取り出す
+      const imageUrl = data.image && data.image.url;
+      const age = data.age;
+
+      if(!imageUrl || typeof age !== 'number'){
+        throw new Error('unexpected response shape: ' + JSON.stringify(data).slice(0, 200));
+      }
+
+      moonFrame.innerHTML = `<img src="${imageUrl}" alt="現在の月の画像">`;
+      ageEl.textContent = age.toFixed(1);
+      statusEl.textContent = `最終更新: ${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;
+    }catch(parseErr){
+      moonFrame.innerHTML = `<div class="placeholder">取得失敗</div>`;
+      statusEl.textContent = 'NASAのレスポンス形式が想定と異なります。';
+      console.error('Dial-A-Moon response parse error:', parseErr, data);
+    }
+  }
+
+  renderClock();
+  setInterval(renderClock, 1000);
+
+  fetchMoonData();
+  setInterval(fetchMoonData, 60 * 1000);
+</script>
+
+</body>
+</html>

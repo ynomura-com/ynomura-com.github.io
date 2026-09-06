@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <link rel="icon" href="favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>現在の月齢と月面画像</title>
-    <link rel="icon" href="favicon.ico">
+    <title>本日の月齢と月面画像</title>
     <style>
         body {
             font-family: sans-serif;
@@ -65,16 +65,22 @@
                 const data = await response.json();
 
                 if (data.age !== undefined) {
-                    const roundedAge = Number(data.age).toFixed(1);
+                    const rawAge = Number(data.age);
+                    const roundedAge = rawAge.toFixed(1);
                     ageElement.textContent = "月齢： " + roundedAge + " 日";
+
+                    // 月齢を四捨五入して対応する画像番号（1〜30など）を決定
+                    // ※ 画像ファイル名が 1.png 〜 30.png であると仮定
+                    let imageIndex = Math.round(rawAge);
+                    
+                    // 0日目や30日超えの場合の丸め処理（必要に応じて調整）
+                    if (imageIndex < 1) imageIndex = 1;
+                    if (imageIndex > 30) imageIndex = 30;
+
+                    const imagePath = `img/${imageIndex}.png`;
+                    imageContainer.innerHTML = `<img src="${imagePath}" alt="月齢 ${roundedAge} の月" onerror="this.onerror=null; this.parentElement.textContent='月画像が見つかりませんでした';">`;
                 } else {
                     ageElement.textContent = "月齢データが見つかりませんでした";
-                }
-
-                if (data.image && data.image.url) {
-                    const imageUrl = data.image.url;
-                    imageContainer.innerHTML = `<img src="${imageUrl}" alt="本日の月">`;
-                } else {
                     imageContainer.textContent = "月画像が見つかりませんでした";
                 }
 

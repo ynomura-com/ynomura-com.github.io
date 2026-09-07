@@ -39,7 +39,7 @@ Google AI Studio版
 ## その他便利なアプリ
 
 ### 月齢の画像データ作成アプリ
-<img alt="アイコン" src="MakeMoonPhaseIMG/favicon.ico">
+<img alt="アイコン" src="MakeMoonPhaseIMG/favicon.ico" align="left">
 
 ・月齢１〜３０の画像データを作成するアプリです。
 

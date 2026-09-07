@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>月齢計算</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0b1026 0%, #1b2340 50%, #0b1026 100%);
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    color: #f0f0f5;
+  }
+  .card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 40px 48px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    min-width: 300px;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 1.4em;
+    letter-spacing: 0.05em;
+  }
+  .moon {
+    font-size: 4em;
+    margin: 16px 0;
+  }
+  .date {
+    color: #b8bedb;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+  }
+  .age {
+    font-size: 2.4em;
+    font-weight: bold;
+    margin: 4px 0;
+  }
+  .phase {
+    font-size: 1.2em;
+    color: #ffd97a;
+    margin-top: 4px;
+  }
+  .footnote {
+    margin-top: 24px;
+    font-size: 0.75em;
+    color: #8a8fb0;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🌙 月齢計算</h1>
+    <div class="date" id="dateStr"></div>
+    <div class="moon" id="moonEmoji"></div>
+    <div class="age" id="ageValue"></div>
+    <div class="phase" id="phaseName"></div>
+    <div class="footnote">基準新月: 2000/1/6 18:14 UTC ／ 朔望月: 29.530588853日</div>
+  </div>
+
+<script>
+function calcMoonAge(date) {
+  // 基準となる新月の日時 (2000/1/6 18:14 UTC)
+  var baseNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+  var synodicMonth = 29.530588853; // 朔望月
+
+  var diffMs = date.getTime() - baseNewMoon;
+  var diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  var moonAge = diffDays % synodicMonth;
+  if (moonAge < 0) moonAge += synodicMonth;
+
+  return moonAge;
+}
+
+function moonPhaseInfo(age) {
+  if (age < 1.0)  return { name: "新月",       emoji: "🌑" };
+  if (age < 6.4)  return { name: "三日月〜上弦前", emoji: "🌒" };
+  if (age < 8.4)  return { name: "上弦の月",    emoji: "🌓" };
+  if (age < 13.8) return { name: "十三夜月〜満月前", emoji: "🌔" };
+  if (age < 15.8) return { name: "満月",        emoji: "🌕" };
+  if (age < 21.1) return { name: "満月〜下弦前", emoji: "🌖" };
+  if (age < 23.1) return { name: "下弦の月",    emoji: "🌗" };
+  if (age < 29.5) return { name: "有明月〜新月前", emoji: "🌘" };
+  return { name: "新月", emoji: "🌑" };
+}
+
+function pad(n) { return ("0" + n).slice(-2); }
+
+function render() {
+  var now = new Date();
+  var age = calcMoonAge(now);
+  var phase = moonPhaseInfo(age);
+
+  var dateStr = now.getFullYear() + "/" + pad(now.getMonth() + 1) + "/" + pad(now.getDate()) +
+                " " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
+
+  document.getElementById("dateStr").textContent = dateStr + " 現在";
+  document.getElementById("moonEmoji").textContent = phase.emoji;
+  document.getElementById("ageValue").textContent = "月齢 " + age.toFixed(2);
+  document.getElementById("phaseName").textContent = phase.name;
+}
+
+render();
+setInterval(render, 1000); // 1秒ごとに更新
+</script>
+</body>
+</html>

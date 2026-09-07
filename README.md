@@ -46,7 +46,7 @@ Google AI Studio版
 [月齢計算アプリへのリンク](./CalcMoonAge/)
 
 ### 月齢の画像データ作成アプリ
-<img alt="アイコン" src="MakeMoonPhaseIMG/favicon.ico" width="64" align="left">
+<img alt="アイコン" src="MakeMoonPhaseIMG/favicon.png" width="64" align="left">
 
 ・月齢１〜３０の画像データを作成するアプリです。
 

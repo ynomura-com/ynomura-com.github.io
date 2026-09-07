@@ -38,6 +38,13 @@ Google AI Studio版
 
 ## その他便利なアプリ
 
+### 月齢計算アプリ
+<img alt="アイコン" src="CalcMoonAge/favicon.ico" width="64" align="left">
+
+・現在の月齢を計算するアプリです。
+
+[月齢計算アプリへのリンク](./CalcMoonAge/)
+
 ### 月齢の画像データ作成アプリ
 <img alt="アイコン" src="MakeMoonPhaseIMG/favicon.ico" width="64" align="left">
 

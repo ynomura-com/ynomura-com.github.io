@@ -24,7 +24,7 @@ PWAアプリは基本的にはブラウザーアプリで動作しますが、�
 ・DJI Fly の Flight Log ファイルを Open DroneLog アプリで CSV でエクスポートしたログファイルを解析して、飛行記録に必要な情報を取り出す PWA アプリ
 Google AI Studio版
 
- 　[DJI 飛行ログ解析アプリ for CSV へのリンク](./DroneLog-CSV/PWA/)
+ 　[DJI 飛行ログ解析アプリ for CSV V2 へのリンク](./DroneLog-CSV/PWA/)
 
 ### 飛行メモアプリ
 <img alt="アイコン" src="DroneMemo/PWA/icon192.png" width="64" align="left">
